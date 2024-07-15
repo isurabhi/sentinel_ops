@@ -13,15 +13,15 @@ class ARIMAForecaster:
         # data = pd.DataFrame(list(cursor))
 
         # Split the data into training and test sets (80% train, 20% test)
-        # train_size = int(len(data) * 0.8)
+        # train_size = int(len(data) * 0.9)
         # train_data = data.iloc[:train_size, -1]
         # test_data = data.iloc[train_size:, -1]
         
-        # train_data, test_data = train_test_split(data, test_size=0.2, shuffle=False)
+        train_data, test_data = train_test_split(data, test_size=0.01, shuffle=False)
         
         # Assuming the last column of the DataFrame is the time series
-        time_series = data.iloc[:, -1]
-        #time_series = train_data.iloc[:, -1]
+        #time_series = data.iloc[:, -1]
+        time_series = train_data.iloc[:, :-1]
         
         # Fit the ARIMA model
         #self.model = ARIMA(time_series, order=self.order)
@@ -32,7 +32,8 @@ class ARIMAForecaster:
         self.model = self.model.fit()
 
         # Return the test data for later comparison
-        #return test_data.iloc[:, -1]
+        # return test_data.iloc[:, -1]
+        return test_data
         
 
     def predict(self, steps=1):

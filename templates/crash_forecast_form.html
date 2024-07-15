@@ -6,9 +6,9 @@
     <!-- Page Content -->
     <div class="container">
         
-        <h3 class="mb-4">Predictive Line Plotting </h3>
+        <h3 class="mb-4">System Crashes Plotting </h3>
         <br>
-        <form action="{{ url_for('Forecast') }}" method="post">
+        <form action="{{ url_for('crashforecast') }}" method="post">
             
             <!--
             <div class="row">
@@ -33,12 +33,6 @@
             -->
             <div class="row">
                 <div class="col col-4">
-                    <label for="exampleFormControlInput2" class="form-label">Country:</label>
-                    <input class="form-control" id="country" name="country" value="India" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col col-4">
                     <label for="exampleFormControlInput1" class="form-label">Forecast Period (Days):</label>
                     <input type="number" class="form-control" id="steps" name="steps" min="1" value="7" required>
                 </div>
@@ -49,7 +43,6 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
-            
         </form>
     </div>
 

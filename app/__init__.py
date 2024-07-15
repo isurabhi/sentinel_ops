@@ -1,8 +1,19 @@
 # app/__init__.py
 from flask import Flask
+from app.controllers import home_controller, detection_controller, forecast_controller, forcast_crashes_controller
 
-app = Flask(__name__, template_folder='../templates')  # Create the Flask app instance
+app = Flask(__name__, template_folder='../templates', static_folder='../static')  # Create the Flask app instance
 
-# Import the controllers to register the routes
-from app.controllers import detection_controller
-from app.controllers import forecast_controller
+# Define route for the Home page
+app.add_url_rule('/', 'Home', home_controller.home)
+
+# Define routes for menu options
+#app.add_url_rule('/forecast', 'Forecast', forecast_controller.forecast)
+app.add_url_rule('/detect', 'Anomaly', detection_controller.detect_anomalies, methods=['POST'])
+# app.add_url_rule('/menu1', 'menu1', controller1.menu1)
+# app.add_url_rule('/menu2', 'menu2', controller2.menu2)
+# app.add_url_rule('/menu3', 'menu3', controller3.menu3)
+
+#app.route('/forecast', methods=['GET', 'POST'])
+app.add_url_rule('/forecast', 'Forecast', forecast_controller.forecast, methods=['GET', 'POST'])
+app.add_url_rule('/crashforecast', 'crashforecast', forcast_crashes_controller.crashforecast, methods=['GET', 'POST'])

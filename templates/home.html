@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container text-center">
+    <div class="row">
+      <div class="col"><img src="{{ url_for('static', filename='home_bg.jpg') }}" width="600" height="400" fill="none" alt="Logp"></div>
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+              <h5 class="my-0 font-weight-normal">Team Freezes</h5>
+            </div>
+          <div class="card-body">
+            <p class="card-text">We use an ARIMA model to study historical trends of MS Team freezes and compare the forecasted trend line with actual freeze events to detect any unusual spikes.</p>
+            <a class="btn btn-primary" href="{{ url_for('Forecast') }}">Run Model</a>
+          </div>
+        </div>
+        <br />
+        <br />
+        <div class="card" >
+          <div class="card-header">
+              <h5 class="my-0 font-weight-normal">System Crashes</h5>
+            </div>
+          <div class="card-body">
+            <p class="card-text">System Crashes on laptops across the countries.</p>
+            <a class="btn btn-primary" href="{{ url_for('Anomaly') }}">Run Model</a>
+          </div>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col"> 
+        <br />
+          <div><p class="lead" style="text-align: justify;">The system
+            would analyse historical data to set a norm for usual operational activity
+            and adapt to fluctuations in patterns, alerting to anomalies that could
+            indicate surges in demand, resource constraints, or security risks. When
+            unusual activity is detected, the platform would proactively issue alerts
+            and automatically generate a ServiceNow ticket for immediate
+            attention, allowing for efficient and effective incident resolution.</p>
+          </div>
+      </div>
+    </div>    
+
+  </div>
+</div>
+{% endblock %}
