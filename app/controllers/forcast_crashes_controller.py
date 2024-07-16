@@ -52,18 +52,29 @@ def crashforecast():
         #predictions_list = predictions.to_json(orient='records', date_format='iso') # predictions.iloc[0:steps]#.tolist()
         #train_data_list = daily_crashes.to_json(orient='records', date_format='iso') # test_data.iloc[0:steps]#.tolist()
 
+        # Create a figure and axis with a black background
+        fig, ax = plt.subplots(figsize=(12, 6))
+        fig.patch.set_facecolor('#212529')
+        ax.set_facecolor('#212529')
         
         #Plot graph of training set, Test set and Algorithm prediction on Test set
-        plt.figure(figsize=(12, 6))
-        #plt.plot(daily_crashes['total_crash'], label='Training Data')
         plt.plot(train_data['total_crash'].resample('D').sum(), label='Training Data')
         plt.plot(test_data['total_crash'].resample('D').sum(), label='Test Data')
         plt.plot(predictions['predicted_mean'].resample('D').sum(), label='Forecasted Data', color='green')
+
+        # Set the color of the tick labels and axis labels to white
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.xaxis.label.set_color('white')
+        ax.yaxis.label.set_color('white')
+        # Set labels for axes
         plt.xlabel('Date')
         plt.ylabel('Total Crashes')
-        plt.title('ARIMA Model - Total Crashes Forecast')
-        plt.legend()
-        #plt.show()
+        plt.title('System Crash Forecast', color='silver')
+
+        plt.legend(loc='upper center', ncol=3, facecolor='silver', edgecolor='white', framealpha=1)
+        #plt.legend()
+
         # Save the figure
         plt.savefig('static/daily_total_crashes.png', bbox_inches='tight')
         plt.close()  # Close the figure to free up memory

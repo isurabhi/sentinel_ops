@@ -65,17 +65,28 @@ def forecast():
         forecast = arima_forecaster.predict(steps=steps)
         predictions = forecast.to_frame()
 
+        # Create a figure and axis with a black background
+        fig, ax = plt.subplots(figsize=(12, 6))
+        fig.patch.set_facecolor('#212529')
+        ax.set_facecolor('#212529')
+
         #Plot graph of training set, Test set and Algorithm prediction on Test set
-        plt.figure(figsize=(12, 6))
-        #plt.plot(daily_crashes['total_crash'], label='Training Data')
         plt.plot(train_data['number_of_freezes'].resample('D').sum(), label='Training Data')
         plt.plot(test_data['number_of_freezes'].resample('D').sum(), label='Test Data')
         plt.plot(predictions['predicted_mean'].resample('D').sum(), label='Forecasted Data', color='green')
+        
+        # Set the color of the tick labels and axis labels to white
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.xaxis.label.set_color('white')
+        ax.yaxis.label.set_color('white')
+        # Set labels for axes
         plt.xlabel('Date')
         plt.ylabel('Total Teams Freezes')
-        plt.title('ARIMA Model - Total MS Teams Forecast')
-        plt.legend()
+        plt.title('MS Teams Freeze Forecast', color='silver')
+        plt.legend(loc='upper center', ncol=3, facecolor='silver', edgecolor='white', framealpha=1)
         #plt.show()
+        
         # Save the figure
         plt.savefig('static/daily_total_teams_freezes.png', bbox_inches='tight')
         plt.close()  # Close the figure to free up memory
