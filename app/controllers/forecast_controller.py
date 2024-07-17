@@ -31,12 +31,13 @@ def forecast():
         filtered_documents = data_service.get_country_data(country) #('India')
         data = pd.DataFrame(list(filtered_documents))
         
+        print(f"data len: {len(data)}")
+
         # Set the 'timestamp' column as the index of the DataFrame
         data.set_index('event_date', inplace=True)
         # Sort the DataFrame by the index (timestamp) if needed
         data.sort_index(inplace=True)
 
-        print(f"data len: {len(data)}")
 
         # Group by the date part alone and count the number of crashes per day
         #data['event_date'] = pd.to_datetime(data['event_date'])

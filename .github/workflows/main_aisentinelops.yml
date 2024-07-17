@@ -36,11 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install Flask  --only-binary :all:
-          pip install pandas --only-binary :all:
-          pip install pymongo --only-binary :all:
-          pip install statsmodels --only-binary :all:
-          pip install scikit-learn --only-binary :all:
+          pip install -r requirements.txt
 
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 

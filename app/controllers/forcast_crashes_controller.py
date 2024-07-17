@@ -39,7 +39,10 @@ def crashforecast():
         daily_crashes = daily_crashes.asfreq('D')
         daily_crashes['total_crash'] = pd.to_numeric(daily_crashes['total_crash'], errors='coerce')
 
-        train_data, test_data = train_test_split(daily_crashes, test_size=0.2, shuffle=False)
+        # Drop rows with any missing values:
+        #daily_crashes.dropna(inplace=True)
+
+        train_data, test_data = train_test_split(daily_crashes, test_size=0.3, shuffle=False)
 
         # Fit the model and get the test data
         #arima_forecaster.fit(daily_crashes)
@@ -58,15 +61,15 @@ def crashforecast():
         ax.set_facecolor('#212529')
         
         #Plot graph of training set, Test set and Algorithm prediction on Test set
-        plt.plot(train_data['total_crash'].resample('D').sum(), label='Training Data')
-        plt.plot(test_data['total_crash'].resample('D').sum(), label='Test Data')
-        plt.plot(predictions['predicted_mean'].resample('D').sum(), label='Forecasted Data', color='green')
+        plt.plot(train_data['total_crash'].resample('D').sum(), label='Historic')
+        plt.plot(test_data['total_crash'].resample('D').sum(), label='Current')
+        plt.plot(predictions['predicted_mean'].resample('D').sum(), label='Forecasted', color='green')
 
         # Set the color of the tick labels and axis labels to white
         ax.tick_params(axis='x', colors='white')
         ax.tick_params(axis='y', colors='white')
-        ax.xaxis.label.set_color('white')
-        ax.yaxis.label.set_color('white')
+        ax.xaxis.label.set_color('silver')
+        ax.yaxis.label.set_color('silver')
         # Set labels for axes
         plt.xlabel('Date')
         plt.ylabel('Total Crashes')
