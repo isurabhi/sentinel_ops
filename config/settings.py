@@ -4,3 +4,4 @@ MONGO_URI = "mongodb+srv://isurabhi:mIR8ps4bDv0u7o@aisentinelops.mongocluster.co
 MONGO_DB_NAME = "sentinel_ops_db"
 MONGO_COLLECTION_NAME = "ms_teams_freezes"
 MONGO_COLLECTION_SYSTEM_CRASHES = "device_crashes"
+#-----------
