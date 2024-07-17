@@ -35,7 +35,12 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install Flask==2.0.1  --only-binary :all:
+          pip install pandas==1.2.4 --only-binary :all:
+          pip install pymongo==3.11.4 --only-binary :all:
+          pip install statsmodels==0.12.2 --only-binary :all:
+          pip install scikit-learn==0.24.2 --only-binary :all:
 
   deploy:
     runs-on: ubuntu-latest
