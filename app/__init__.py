@@ -1,6 +1,6 @@
 # app/__init__.py
 from flask import Flask
-from app.controllers import home_controller, detection_controller, forecast_controller, forcast_crashes_controller
+from app.controllers import home_controller, detection_controller, forecast_controller, forcast_crashes_controller, config_controller
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')  # Create the Flask app instance
 
@@ -17,3 +17,5 @@ app.add_url_rule('/detect', 'Anomaly', detection_controller.detect_anomalies, me
 #app.route('/forecast', methods=['GET', 'POST'])
 app.add_url_rule('/forecast', 'Forecast', forecast_controller.forecast, methods=['GET', 'POST'])
 app.add_url_rule('/crashforecast', 'crashforecast', forcast_crashes_controller.crashforecast, methods=['GET', 'POST'])
+app.add_url_rule('/config', 'Config', config_controller.settings, methods=['GET', 'POST'])
+app.add_url_rule('/currentcrashes', 'currentcrashes', forcast_crashes_controller.currentcrashes, methods=['POST'])

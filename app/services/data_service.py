@@ -2,6 +2,7 @@
 from db.mongo_connector import MongoConnector
 from config.settings import MONGO_COLLECTION_NAME
 from config.settings import MONGO_COLLECTION_SYSTEM_CRASHES
+from datetime import datetime
 
 class DataService:
     def __init__(self):
@@ -13,8 +14,14 @@ class DataService:
 
     def get_country_data(self, country):
         collection = self.connector.get_collection(MONGO_COLLECTION_NAME)
+
+        date_string = "2024-05-30"
+        date_format = "%Y-%m-%d"
+        comparison_date = datetime.strptime(date_string, date_format)
+
         # Define the query to filter the documents
-        query = {"device_country": country, 'device_city': {'$nin': [None, ""]}}
+        #query = {"device_country": country, 'device_city': {'$nin': [None, ""]}}
+        query = {"device_country": country, 'device_city': {'$nin': [None, ""]},'event_date': {'$gt': comparison_date}}
         #query = {"device_country": country}
         
         # Define the projection to select specific fields (1 to include, 0 to exclude)

@@ -4,3 +4,4 @@ pymongo
 statsmodels
 scikit-learn
 matplotlib
+Prophet
