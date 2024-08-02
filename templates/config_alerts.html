@@ -1,0 +1,73 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Page Content -->
+    <div class="container">
+        
+        <h3 class="mb-4">Config Alerts</h3>
+        <br>
+        <form action="{{ url_for('Config') }}" method="post">
+            <div class="row">
+                <div class="col col-2">
+                    <label class="form-label">Alert for :</label>
+                </div>
+                <div class="col col-auto">
+                    <label class="form-label">MS Teams Freeze</label>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="txtProd1Range" class="form-label">Variance Range:</label>
+                </div>
+                <div class="col col-auto">
+                    +/- <input type="number" min="50" max="200" id="txtProd1Range" style="width: 100px;" name="txtProd1Range" value="80" /> %
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="txtProd1Email" class="form-label">Email Distribution ID:</label>
+                </div>
+                <div class="col col-3">  
+                    <input type="email" class="form-control" id="txtProd1Email" name="txtProd1Email" value="surabhi.rajan.n@gds.ey.com" required> 
+                </div>
+            </div>
+            <br/>
+            <hr/>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="txtProd2" class="form-label">Alert for :</label>
+                </div>
+                <div class="col col-auto">
+                    <label class="form-label">System Crashes</label>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="txtProd2Range" class="form-label">Variance Range :</label>                    
+                </div>
+                <div class="col col-auto">+/- <input type="number" min="50" max="200" id="txtProd2Range" 
+                    style="width: 100px;" name="txtProd2Range" value="60" /> %</div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="exampleFormControlInput1" class="form-label">Email Distribution ID:</label>
+                </div>
+                <div class="col col-3">
+                    <input type="email" class="form-control" id="txtProd2Email" name="txtProd2Email" value="Padam.Thapa@gds.ey.com" required>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col col-4">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+
+{% endblock %}

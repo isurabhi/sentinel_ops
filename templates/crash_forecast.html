@@ -6,14 +6,27 @@
     <!-- Page Content -->
     <div class="container">
         <h3 class="mb-4">System Crashes Analysis</h3>
-        <!-- Container for the chart -->
-        <div style="width: 75%;border-width: 1px;">
-            <!--<canvas id="forecastChart"></canvas>-->
-            <!-- Embed the image using the passed filename -->
-                <img src="{{ url_for('static', filename=image_file) }}" alt="Daily Total Crashes">
+        <div class="row">
+            <div class="col col-8">
+                <!-- Container for the chart -->
+                <div style="width: 100%;border-width: 1px;">
+                    <!--<canvas id="forecastChart"></canvas>-->
+                    <!-- Embed the image using the passed filename -->
+                        <img src="{{ url_for('static', filename=image_file) }}" alt="Daily Total Crashes">
+                </div>
+            </div>
+            <div class="col col-4">
+                {{ alert_data|safe }}
+            </div>
         </div>
         <br/>
-        <div class="row">
+        <div class="row">            
+            <div class="col col-2">
+                <form action="{{ url_for('currentcrashes') }}" method="post">
+                    <input type="hidden" class="form-control" id="steps" name="steps" min="1" value="{{ steps }}" required>
+                    <button type="submit" class="btn btn-primary">Get Current Crashes</button>
+                </form>
+            </div>
             <div class="col col-2">
                 <a class="btn btn-warning" href="/crashforecast">Reset</a>
             </div>

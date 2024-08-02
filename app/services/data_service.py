@@ -2,6 +2,8 @@
 from db.mongo_connector import MongoConnector
 from config.settings import MONGO_COLLECTION_NAME
 from config.settings import MONGO_COLLECTION_SYSTEM_CRASHES
+from config.settings import MONGO_COLLECTION_ALERT_CONFIG
+from config.settings import MONGO_COLLECTION_ALERT
 from datetime import datetime
 
 class DataService:
@@ -37,3 +39,16 @@ class DataService:
     def get_system_crash_data(self):
         collection = self.connector.get_collection(MONGO_COLLECTION_SYSTEM_CRASHES)
         return collection.find()
+    
+    def get_spike_alerts(self):
+        collection = self.connector.get_collection(MONGO_COLLECTION_ALERT)
+        return collection.find()
+    
+    def get_alert_config(self):
+        collection = self.connector.get_collection(MONGO_COLLECTION_ALERT_CONFIG)
+        return collection.find()
+    
+    def save_alert_config(self, alert):
+        collection = self.connector.get_collection(MONGO_COLLECTION_ALERT_CONFIG)
+        result = collection.insert_one(alert)
+        return result.inserted_id
