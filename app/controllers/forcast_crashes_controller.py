@@ -91,7 +91,7 @@ def currentcrashes():
     if request.method == 'POST':
         # Retrieve form data
         p = 7 # int(request.form.get('p', 1))
-        d = 1 # int(request.form.get('d', 1))
+        d = 2 # int(request.form.get('d', 1))
         q = 1 # int(request.form.get('q', 1))
         steps = int(request.form.get('steps', 7))
         print(f"p: {p}, d: {d}, q: {q}, steps: {steps}!")
