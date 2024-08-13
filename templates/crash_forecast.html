@@ -7,15 +7,15 @@
     <div class="container">
         <h3 class="mb-4">System Crashes Analysis</h3>
         <div class="row">
-            <div class="col col-8">
+            <div class="col col-10">
                 <!-- Container for the chart -->
-                <div style="width: 100%;border-width: 1px;">
+                <div style="width: 90%;border-width: 1px;">
                     <!--<canvas id="forecastChart"></canvas>-->
                     <!-- Embed the image using the passed filename -->
                         <img src="{{ url_for('static', filename=image_file) }}" alt="Daily Total Crashes">
                 </div>
             </div>
-            <div class="col col-4">
+            <div class="col col-2">
                 {{ alert_data|safe }}
             </div>
         </div>

@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 class CRASHForecaster:
-    def __init__(self, order=(7, 1, 1)):
+    def __init__(self, order=(7, 2, 1)):
         self.order = order
         self.model = None
 

@@ -37,8 +37,13 @@ class DataService:
         return filtered_documents
 
     def get_system_crash_data(self):
+        #date_string = "2024-02-28"
+        #date_format = "%Y-%m-%d"
+        #comparison_date = datetime.strptime(date_string, date_format)
+        #query = {'system_crash_time': {'$gt': comparison_date}}
         collection = self.connector.get_collection(MONGO_COLLECTION_SYSTEM_CRASHES)
         return collection.find()
+        #return collection.find(query)
     
     def get_spike_alerts(self):
         collection = self.connector.get_collection(MONGO_COLLECTION_ALERT)

@@ -10,7 +10,7 @@ data_service = DataService()
 def crashforecast():
     if request.method == 'POST':
         # Retrieve form data
-        p = 7 # int(request.form.get('p', 1))
+        p = 5 # int(request.form.get('p', 1))
         d = 1 # int(request.form.get('d', 1))
         q = 1 # int(request.form.get('q', 1))
         steps = int(request.form.get('steps', 7))
@@ -42,7 +42,7 @@ def crashforecast():
         # Drop rows with any missing values:
         #daily_crashes.dropna(inplace=True)
 
-        train_data, test_data = train_test_split(daily_crashes, test_size=0.2, shuffle=False)
+        train_data, test_data = train_test_split(daily_crashes, test_size=0.20, shuffle=False)
 
         # Fit the model and get the test data
         #arima_forecaster.fit(daily_crashes)
@@ -90,7 +90,7 @@ def crashforecast():
 def currentcrashes():
     if request.method == 'POST':
         # Retrieve form data
-        p = 7 # int(request.form.get('p', 1))
+        p = 5 # int(request.form.get('p', 1))
         d = 1 # int(request.form.get('d', 1))
         q = 1 # int(request.form.get('q', 1))
         steps = int(request.form.get('steps', 7))
@@ -122,7 +122,7 @@ def currentcrashes():
         # Drop rows with any missing values:
         #daily_crashes.dropna(inplace=True)
 
-        train_data, test_data = train_test_split(daily_crashes, test_size=0.2, shuffle=False)
+        train_data, test_data = train_test_split(daily_crashes, test_size=0.20, shuffle=False)
 
         # Fit the model and get the test data
         #arima_forecaster.fit(daily_crashes)
@@ -139,9 +139,10 @@ def currentcrashes():
             'total_crash': predictions['predicted_mean']
         })
         merged_df = pd.merge(test_data, forecast_df_cpy, on='date', suffixes=('_df1', '_df2'))
-        condition_met_df = merged_df[merged_df['total_crash_df1'] > ((0.5 * merged_df['total_crash_df2']) + merged_df['total_crash_df2']) ]
+        condition_met_df = merged_df[merged_df['total_crash_df1'] > ((0.75 * merged_df['total_crash_df2']) + merged_df['total_crash_df2']) ]
         #html_table = condition_met_df.iloc[:, [0]].to_html(index=False, header=False, classes='table')
         #print(html_table)
+        condition_met_df['date'] = condition_met_df['date'].dt.date
         bootstrap_alerts = ''.join(f'<div class="alert alert-primary" role="alert">Notified that the actual data Spiked on: {value}</div>' for value in condition_met_df.iloc[:, 0])
 
         # Create a figure and axis with a black background
