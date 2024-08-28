@@ -5,6 +5,16 @@
     <div class="row">
       <div class="col"><img src="{{ url_for('static', filename='home_bg.jpg') }}" width="600" height="400" fill="none" alt="Logp"></div>
       <div class="col">
+        <div class="card" >
+          <div class="card-header">
+              <h5 class="my-0 font-weight-normal">BSOD Crashes</h5>
+            </div>
+          <div class="card-body">
+            <p class="card-text">BSOD System Crashes.</p>
+            <a class="btn btn-primary" href="{{ url_for('bsodcrashforecast') }}">Analysis</a>
+          </div>
+        </div>
+        <br />
         <div class="card">
           <div class="card-header">
               <h5 class="my-0 font-weight-normal">Team Freezes</h5>
@@ -14,8 +24,7 @@
             <a class="btn btn-primary" href="{{ url_for('Forecast') }}">Run Model</a>
           </div>
         </div>
-        <br />
-        <br />
+        <br />        
         <div class="card" >
           <div class="card-header">
               <h5 class="my-0 font-weight-normal">System Crashes</h5>
@@ -24,7 +33,7 @@
             <p class="card-text">Analysis and forcast on the logs of System Crashes on PCs across the countries.</p>
             <a class="btn btn-primary" href="{{ url_for('crashforecast') }}">Run Model</a>
           </div>
-      </div>
+        </div>
       </div>
     </div>
     <div class="row">

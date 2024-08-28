@@ -1,0 +1,30 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Page Content -->
+    <div class="container">
+        <h3 class="mb-4">BSOD Crashes Analysis</h3>
+        <div class="row">
+            <div class="col col-10">
+                <!-- Container for the chart -->
+                <div style="width: 90%;border-width: 1px;">
+                    <!--<canvas id="forecastChart"></canvas>-->
+                    <!-- Embed the image using the passed filename -->
+                        <img src="{{ url_for('static', filename=image_file) }}" alt="Daily Total Crashes">
+                </div>
+            </div>
+            <div class="col col-2">
+                {{ alert_data|safe }}
+            </div>
+        </div>
+        <br/>
+        <div class="row">            
+            <div class="col col-2">
+                <a class="btn btn-warning" href="/bsodcrashforecast">Reset</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

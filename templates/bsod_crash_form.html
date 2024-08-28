@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Page Content -->
+    <div class="container">
+        
+        <h3 class="mb-4">BSOD Crashes Analysis</h3>
+        <br>
+        <form action="{{ url_for('bsodcrashforecast') }}" method="post">
+            <div class="row">
+                <div class="col col-4">
+                    <label for="exampleFormControlInput1" class="form-label">Forecast Period (Days):</label>
+                    <input type="number" class="form-control" id="steps" name="steps" min="1" value="14" required>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col col-2">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
