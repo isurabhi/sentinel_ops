@@ -18,5 +18,6 @@ app.add_url_rule('/detect', 'Anomaly', detection_controller.detect_anomalies, me
 app.add_url_rule('/forecast', 'Forecast', forecast_controller.forecast, methods=['GET', 'POST'])
 app.add_url_rule('/crashforecast', 'crashforecast', forcast_crashes_controller.crashforecast, methods=['GET', 'POST'])
 app.add_url_rule('/bsodcrashforecast', 'bsodcrashforecast', bsod_crash_controller.bsodcrashforecast, methods=['GET', 'POST'])
+app.add_url_rule('/bsodcrashdetails', 'bsodcrashdetails', bsod_crash_controller.bsodcrashdetails, methods=['GET', 'POST'])
 app.add_url_rule('/config', 'Config', config_controller.alert_config, methods=['GET', 'POST'])
 app.add_url_rule('/currentcrashes', 'currentcrashes', forcast_crashes_controller.currentcrashes, methods=['POST'])

@@ -4,6 +4,8 @@ from flask import render_template, request
 from app.services.data_service import DataService
 from ml_model.crash_forcaster import CRASHForecaster
 from sklearn.model_selection import train_test_split
+from datetime import datetime
+from config.settings import CATERGORY_MAP
 
 data_service = DataService()
 
@@ -13,24 +15,133 @@ def bsodcrashforecast():
         p = 5 # int(request.form.get('p', 1))
         d = 1 # int(request.form.get('d', 1))
         q = 1 # int(request.form.get('q', 1))
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        steps = int(request.form.get('steps', 7))
+        crash_type = request.form.get('crash_type')
+        #print(f"p: {p}, d: {d}, q: {q}, steps: {steps}!")
+        print(f"start_date: {start_date}, end_date: {end_date}, crash_type: {crash_type}, steps: {steps}!")
+        # Initialize ARIMA forecaster with the provided order        
+        arima_forecaster = CRASHForecaster(order=(p, d, q))
+        if(crash_type == 'tot_crash'):
+            filtered_documents = data_service.get_bsod_crash_data(start_date, end_date)
+            data = pd.DataFrame(list(filtered_documents))
+            # Set the 'system_crash_date' column as the index of the DataFrame
+            data.set_index('system_crash_date', inplace=True)
+            # Sort the DataFrame by the index (timestamp) if needed
+            data.sort_index(inplace=True)
+            arima_forecaster.fit(data)
+            tot_forecast = arima_forecaster.predict(steps=steps)
+            tot_predictions = tot_forecast.to_frame()
+        else:
+            filtered_documents = data_service.get_bsod_crash_details(crash_type, start_date, end_date)
+            data = pd.DataFrame(list(filtered_documents))
+            # Set the 'system_crash_date' column as the index of the DataFrame
+            data.set_index('system_crash_date', inplace=True)
+            # Sort the DataFrame by the index (timestamp) if needed
+            data.sort_index(inplace=True)
+            tot_series_data = data['system_crash_count'].resample('D').sum()
+            arima_forecaster.fit(tot_series_data)
+            tot_forecast = arima_forecaster.predict(steps=steps)
+            tot_predictions = tot_forecast.to_frame()
+
+        if(crash_type == 'tot_crash'):
+            #train_data, test_data = train_test_split(data, test_size=0.20, shuffle=False)
+            #print (train_data)
+            #arima_forecaster.fit(data)
+            #forecast = arima_forecaster.predict(steps=steps)
+            #predictions = forecast.to_frame()
+
+            # Create a figure and axis with a black background
+            fig, ax = plt.subplots(figsize=(12, 6))
+            fig.patch.set_facecolor('#212529')
+            ax.set_facecolor('#212529')
+        
+            #Plot graph of training set, Test set and Algorithm prediction on Test set
+            plt.plot(data['system_crash_count'].resample('D').sum(), label='Total Crash')     
+            plt.plot(tot_predictions['predicted_mean'].resample('D').sum(), label='Forecasted', color='green')
+
+            # Set the color of the tick labels and axis labels to white
+            ax.tick_params(axis='x', colors='white')
+            ax.tick_params(axis='y', colors='white')
+            ax.xaxis.label.set_color('silver')
+            ax.yaxis.label.set_color('silver')
+            # Set labels for axes
+            plt.xlabel('Date')
+            plt.ylabel('Crash Counts')
+            plt.title('BSOD Crashes', color='silver')
+
+            #plt.legend(loc='upper center', ncol=3, facecolor='silver', edgecolor='white', framealpha=1)
+            plt.legend(loc='upper left', ncol=2, facecolor='silver', edgecolor='white', framealpha=1, bbox_to_anchor=(1, 1))
+            #plt.legend()
+
+            # Save the figure
+            plt.savefig('static/bsod_total_crashes.png', bbox_inches='tight')
+            plt.close()  # Close the figure to free up memory
+            image_file_name='bsod_total_crashes.png'
+
+        else:
+            if crash_type in data.columns:
+                # Resample data for the selected crash type
+                series_data = data[crash_type].resample('D').sum()
+                            # Fit the model and make a forecast
+                arima_forecaster_d = CRASHForecaster(order=(p, d, q))
+                arima_forecaster_d.fit(series_data)
+                forecast = arima_forecaster_d.predict(steps=steps)
+                            # Plot the forecast
+                #plt.figure(figsize=(10, 5))
+                    # Create a figure and axis with a black background
+                fig, ax = plt.subplots(figsize=(13, 6))
+                fig.patch.set_facecolor('#212529')
+                ax.set_facecolor('#212529')
+        
+                plt.plot(data['system_crash_count'].resample('D').sum(), label='Total Crash')     
+                plt.plot(tot_predictions['predicted_mean'].resample('D').sum(), label='Forecasted', color='green')
+                plt.plot(series_data, label=f'{crash_type} History', color='orange')
+                plt.plot(forecast, label='Forecasted', color='yellow')
+                plt.legend()
+                plt.xlabel('Date')
+                plt.ylabel('Crash Counts')
+                plt.title(f'BSOD {crash_type} Forecast', color='silver')
+
+                # Set the color of the tick labels and axis labels to white
+                ax.tick_params(axis='x', colors='white')
+                ax.tick_params(axis='y', colors='white')
+                ax.xaxis.label.set_color('silver')
+                ax.yaxis.label.set_color('silver')
+
+                #plt.legend(loc='upper left', ncol=2, facecolor='silver', edgecolor='white', framealpha=1, bbox_to_anchor=(1, 1))
+                plt.legend(loc='upper left', ncol=1, facecolor='silver', edgecolor='white', framealpha=1, bbox_to_anchor=(1, 1))
+
+                # Save the plot to a file
+                plt.savefig('static/bsod_crash_forecast.png')
+                plt.close()
+                image_file_name = 'bsod_crash_forecast.png'
+
+        return render_template('bsod_crash_forcast.html', image_file=image_file_name, steps=steps)
+    else:
+        # Render the forecast form template
+        cat_map = CATERGORY_MAP
+        start_dt = datetime.strptime("2024-01-01", '%Y-%m-%d')
+        end_dt = datetime.strptime("2024-08-31", '%Y-%m-%d')
+        return render_template('bsod_crash_form.html', default_start_date="2024-01-01", default_end_date="2024-08-31", category_map=cat_map)
+    
+def bsodcrashdetails():
+    if request.method == 'POST':
+        # Retrieve form data
+        p = 5 # int(request.form.get('p', 1))
+        d = 1 # int(request.form.get('d', 1))
+        q = 1 # int(request.form.get('q', 1))
         steps = int(request.form.get('steps', 7))
         print(f"p: {p}, d: {d}, q: {q}, steps: {steps}!")
 
-        # Initialize ARIMA forecaster with the provided order
-        arima_forecaster = CRASHForecaster(order=(p, d, q))
-
-        filtered_documents = data_service.get_bsod_crash_data()
+        filtered_documents = data_service.get_bsod_crash_details()
         data = pd.DataFrame(list(filtered_documents))
 
         # Set the 'system_crash_date' column as the index of the DataFrame
         data.set_index('system_crash_date', inplace=True)
         # Sort the DataFrame by the index (timestamp) if needed
         data.sort_index(inplace=True)
-
-        # train_data, test_data = train_test_split(data, test_size=0.20, shuffle=False)
-        # arima_forecaster.fit(train_data)
-        # forecast = arima_forecaster.predict(steps=steps)
-        # predictions = forecast.to_frame()
 
         # Create a figure and axis with a black background
         fig, ax = plt.subplots(figsize=(12, 6))
@@ -65,10 +176,10 @@ def bsodcrashforecast():
         #plt.legend()
 
         # Save the figure
-        plt.savefig('static/bsod_total_crashes.png', bbox_inches='tight')
+        plt.savefig('static/bsod_crashes_details.png', bbox_inches='tight')
         plt.close()  # Close the figure to free up memory
 
-        return render_template('bsod_crash_forcast.html', image_file='bsod_total_crashes.png', steps=steps)
+        return render_template('bsod_crash_forcast.html', image_file='bsod_crashes_details.png', steps=steps)
     else:
         # Render the forecast form template
         return render_template('bsod_crash_form.html')
