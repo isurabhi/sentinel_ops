@@ -1,0 +1,88 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Page Content -->
+    <div class="container">
+        <h3 class="mb-4">BSOD Crashes Analysis</h3>
+        <div class="row">
+            <div class="col col-10">
+                <!-- Container for the chart -->
+                <div style="width: 90%;border-width: 1px;">
+                    <!--<canvas id="forecastChart"></canvas>-->
+                    <canvas id="crashForecastChart"></canvas>
+                    <!-- Include the data from the Flask route -->
+                    <script>
+                        const chartData = {{ chart_data | tojson }};
+                        console.log(chartData);
+                    </script>
+
+                    <!-- Script to create the chart -->
+                    <script>
+                        const ctx = document.getElementById('crashForecastChart').getContext('2d');
+                        const crashForecastChart = new Chart(ctx, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                onClick: (event, elements) => {
+                                    if (elements.length > 0) {
+                                        const firstPoint = elements[0];
+                                        const label = crashForecastChart.data.labels[firstPoint.index];
+                                        const value = crashForecastChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                                        // Call a function to handle the click event
+                                        handlePointClick(label, value);
+                                    }
+                                }
+                            }
+                        });
+                        function handlePointClick(date, value) {
+                            // Display the details in a pop-up
+                            // You can customize this part to display the pop-up as you prefer
+                            //alert(`Date: ${date}\nValue: ${value}`);
+                            // If you want to open a new page instead, you can use:
+                            // window.location.href = `/details-page?date=${date}`;
+                            // Set the date and value in the modal
+                            document.getElementById('modalDate').textContent = date;
+                            document.getElementById('modalValue').textContent = value;
+                            // Show the modal
+                            $('#detailsModal').modal('show');
+                        }
+                        function handleCloseClick() {
+                            $('#detailsModal').modal('hide');
+                        }
+                        $()
+                    </script>
+                </div>
+            </div>
+            <div class="col col-2">
+            
+            </div>
+        </div>
+        <br/>
+        <div class="row">          
+            <div class="col col-2">
+                <a class="btn btn-warning" href="/bsodcrashforecast">Reset</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap modal -->
+  <div class="modal modal-dialog-scrollable" tabindex="-1" role="dialog" id="detailsModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Details</h5>
+        </div>
+        <div class="modal-body">
+          <p>Date: <span id="modalDate"></span></p>
+          <p>Count: <span id="modalValue"></span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnclose" onclick="handleCloseClick()" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}

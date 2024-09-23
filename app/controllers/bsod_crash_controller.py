@@ -4,12 +4,104 @@ from flask import render_template, request
 from app.services.data_service import DataService
 from ml_model.crash_forcaster import CRASHForecaster
 from sklearn.model_selection import train_test_split
-from datetime import datetime
+from datetime import datetime, timedelta
 from config.settings import CATERGORY_MAP
 
 data_service = DataService()
 
+def bsodgetcrashdata(crash_type, start_date, end_date):
+    if(crash_type == 'tot_crash'):
+        filtered_documents = data_service.get_bsod_crash_data(start_date, end_date)
+    else:
+        filtered_documents = data_service.get_bsod_crash_details(crash_type, start_date, end_date)
+
+    data = pd.DataFrame(list(filtered_documents))
+    # Set the 'system_crash_date' column as the index of the DataFrame
+    data.set_index('system_crash_date', inplace=True)
+    # Sort the DataFrame by the index (timestamp) if needed
+    data.sort_index(inplace=True)
+
+    return data
+
 def bsodcrashforecast():
+    if request.method == 'POST':
+    # Retrieve form data
+        p = 5 # int(request.form.get('p', 1))
+        d = 1 # int(request.form.get('d', 1))
+        q = 1 # int(request.form.get('q', 1))
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        steps = int(request.form.get('steps', 7))
+        crash_type = request.form.get('crash_type')
+
+        data = bsodgetcrashdata(crash_type, start_date, end_date)
+
+        if(crash_type == 'tot_crash'):
+            tot_series_data = data
+        else: 
+            tot_series_data = data['system_crash_count']
+
+        # Initialize ARIMA forecaster with the provided order        
+        tot_arima_forecaster = CRASHForecaster(order=(p, d, q))
+        tot_arima_forecaster.fit(tot_series_data)
+        tot_forecast = tot_arima_forecaster.predict(steps=steps)
+        tot_predictions = tot_forecast.to_frame()
+
+        # Convert your dates to a format that can be serialized to JSON
+        # dates = [date.strftime('%Y-%m-%d') for date in data.index]
+        if isinstance(tot_series_data, pd.DataFrame):
+            total_crash_data = tot_series_data.sum(axis=1).resample('D').sum().tolist()
+        else:
+            total_crash_data = tot_series_data.resample('D').sum().tolist()
+        #total_crash_data = tot_series_data.resample('D').sum().tolist()
+        total_crash_forecasted_data = tot_predictions['predicted_mean'].resample('D').sum().tolist()
+
+        dates = [date.strftime('%Y-%m-%d') for date in data.index]
+        last_date = datetime.strptime(dates[-1], '%Y-%m-%d')
+
+        # Add 10 more days to the 'dates' array
+        for i in range(1, steps):
+            new_date = last_date + timedelta(days=i)
+            dates.append(new_date.strftime('%Y-%m-%d'))
+
+        if crash_type in data.columns:
+            series_data = data[crash_type].resample('D').sum()
+            arima_forecaster_d = CRASHForecaster(order=(p, d, q))
+            arima_forecaster_d.fit(series_data)
+            forecast = arima_forecaster_d.predict(steps=steps)
+            history_data = series_data.tolist()
+            forecast_data = forecast.tolist()
+            #dates = [date.strftime('%Y-%m-%d') for date in data.index]
+            # Prepare the data for the frontend
+            chart_data = {
+                'labels': dates,
+                'datasets': [
+                    {'label': 'Total Crash', 'data': total_crash_data, 'borderColor': 'blue'},
+                    {'label': 'Forecast Crash', 'data': [None] * len(total_crash_data) + total_crash_forecasted_data, 'borderColor': 'green'},
+                    {'label': f'{crash_type} History', 'data': history_data, 'borderColor': 'orange'},
+                    {'label': f'{crash_type} Forecast', 'data': [None] * len(history_data) + forecast_data, 'borderColor': 'yellow'}
+                ]
+            }   
+        else:
+            # Prepare the data for the frontend
+            # dates = [date.strftime('%Y-%m-%d') for date in data.index]
+            chart_data = {
+                'labels': dates,
+                'datasets': [
+                    {'label': 'Total Crash', 'data': total_crash_data, 'borderColor': 'blue'},
+                    {'label': 'Forecasted Crash', 'data': [None] * len(total_crash_data) + total_crash_forecasted_data, 'borderColor': 'green'}
+                ]
+            }
+
+        return render_template('bsod_crash_forcast1.html', chart_data=chart_data)
+    else:
+        # Render the forecast form template
+        cat_map = CATERGORY_MAP
+        start_dt = datetime.strptime("2024-01-01", '%Y-%m-%d')
+        end_dt = datetime.strptime("2024-08-31", '%Y-%m-%d')
+        return render_template('bsod_crash_form.html', default_start_date="2024-01-01", default_end_date="2024-08-31", category_map=cat_map)
+
+def bsodcrashforecast1():
     if request.method == 'POST':
         # Retrieve form data
         p = 5 # int(request.form.get('p', 1))
