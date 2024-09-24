@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask import render_template, request
+from flask import render_template, request, render_template_string
 from app.services.data_service import DataService
 from ml_model.crash_forcaster import CRASHForecaster
 from sklearn.model_selection import train_test_split
@@ -22,6 +22,21 @@ def bsodgetcrashdata(crash_type, start_date, end_date):
     data.sort_index(inplace=True)
 
     return data
+
+def get_crash_machines():
+    crash_date = request.args.get('crash_date')
+    print(f'crash_date: {crash_date}')
+    filtered_documents = data_service.get_bsod_crash_machines(crash_date)
+    data = pd.DataFrame(list(filtered_documents))
+    html_content = '<table class="table table-dark table-striped"><tr><th>Device</th><th>Crash Label</th></tr>'
+    for index, row in data.iterrows():
+        html_content += "<tr>"
+        html_content += f"<td>{row['device_name']}</td>"
+        html_content += f"<td>{row['crash_label']}</td>"
+        html_content += "</tr>"
+    html_content += "</table>"
+    
+    return html_content
 
 def bsodcrashforecast():
     if request.method == 'POST':

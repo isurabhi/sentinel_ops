@@ -38,20 +38,42 @@
                         });
                         function handlePointClick(date, value) {
                             // Display the details in a pop-up
+                            const url = `/get-machines?crash_date=${encodeURIComponent(date)}`;
+                            const detailsContainer = document.getElementById('detailsContainer');
+                            detailsContainer.innerHTML = "";
+                            fetch(url)
+                                .then(response => {
+                                    // Check if the response is OK (status code 200)
+                                    if (response.ok) {
+                                        // Assuming the response is HTML content
+                                        return response.text();
+                                    } else {
+                                        throw new Error('Network response was not ok.');
+                                    }
+                                })
+                                .then(htmlContent => {
+                                    // Render the HTML content in a modal or a div on your page
+                                    //const detailsContainer = document.getElementById('detailsContainer');
+                                    detailsContainer.innerHTML = htmlContent;
+                                    // If you're using a modal, show it here
+                                    $('#detailsModal').modal('show');
+                                })
+                                .catch(error => {
+                                    console.error('There has been a problem with your fetch operation:', error);
+                                });
                             // You can customize this part to display the pop-up as you prefer
                             //alert(`Date: ${date}\nValue: ${value}`);
                             // If you want to open a new page instead, you can use:
                             // window.location.href = `/details-page?date=${date}`;
                             // Set the date and value in the modal
-                            document.getElementById('modalDate').textContent = date;
-                            document.getElementById('modalValue').textContent = value;
+                            //document.getElementById('modalDate').textContent = date;
+                            //document.getElementById('modalValue').textContent = value;
                             // Show the modal
-                            $('#detailsModal').modal('show');
+                            //$('#detailsModal').modal('show');
                         }
                         function handleCloseClick() {
                             $('#detailsModal').modal('hide');
                         }
-                        $()
                     </script>
                 </div>
             </div>
@@ -72,11 +94,10 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Details</h5>
+          <h5 class="modal-title">Machine Details</h5>
         </div>
         <div class="modal-body">
-          <p>Date: <span id="modalDate"></span></p>
-          <p>Count: <span id="modalValue"></span></p>
+          <div id="detailsContainer"></div>
         </div>
         <div class="modal-footer">
           <button type="button" id="btnclose" onclick="handleCloseClick()" class="btn btn-secondary" data-dismiss="modal">Close</button>

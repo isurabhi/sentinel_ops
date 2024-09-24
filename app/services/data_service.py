@@ -102,3 +102,11 @@ class DataService:
         # Execute the query and projection
         filtered_documents = collection.find(query, projection)
         return filtered_documents
+    
+    def get_bsod_crash_machines(self, crash_date):
+        collection = self.connector.get_collection('BSOD')
+        crash_datetime = datetime.strptime(crash_date, '%Y-%m-%d')
+        query = {'system_crash_date': {'$eq': crash_datetime}}
+        projection = {"_id": 0, "system_crash_date": 1, "device_name": 1, "crash_label": 1 }
+        filtered_documents = collection.find(query, projection)
+        return filtered_documents
