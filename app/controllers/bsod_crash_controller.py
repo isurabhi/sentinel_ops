@@ -111,13 +111,13 @@ def get_crash_machines():
 
     html_content = '<div class="row">'
     for index, row in data.iterrows():
-        html_content += '<div class="col-sm-4"><div class="card" >'
-        html_content += f'<h5 class="card-header">{row["crash_label"]}</h5>'
+        html_content += '<div class="col-sm-4"><div class="card mb-3" style="height: 18rem;">'
+        html_content += f'<h5 class="card-header">Device Count : {row["device_count"]}</h5>'
         html_content += '<div class="card-body">'
-        html_content += f'<h5 class="card-title">Device Count : {row["device_count"]}</h5>'
-        html_content += f'<p class="card-text">{row["devices"]}</p>'
-        html_content += '<a href="#" class="btn btn-secondary">Details</a>'
+        html_content += f'<h5 class="card-title">Crash Label : {row["crash_label"]}</h5>'
+        #html_content += f'<p class="card-text">{row["devices"]}</p>'
         html_content += '</div>'
+        html_content += '<div class="card-footer"><a href="#" class="card-link">Details</a></div>'        
         html_content += "</div></div><br />"
 
     html_content += "</div>"
