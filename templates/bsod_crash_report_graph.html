@@ -1,0 +1,14 @@
+
+<div style="width: 90%;border-width: 1px;">
+    <!--<canvas id="forecastChart"></canvas>-->
+    <canvas id="crashForecastChart"></canvas>
+    <!-- Include the data from the Flask route -->
+    <script>
+        const chartData = {{ chart_data | tojson }};
+        console.log(chartData);
+    </script>
+    </div>
+</div>
+<table class="table table-dark table-striped">
+    <tr><th>Crash Label</th><th>Crash Count</th></tr>
+</table>

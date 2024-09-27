@@ -103,10 +103,36 @@ class DataService:
         filtered_documents = collection.find(query, projection)
         return filtered_documents
     
-    def get_bsod_crash_machines(self, crash_date):
+    def get_bsod_crash_machines(self, crash_date, crash_type):
         collection = self.connector.get_collection('BSOD')
         crash_datetime = datetime.strptime(crash_date, '%Y-%m-%d')
-        query = {'system_crash_date': {'$eq': crash_datetime}}
-        projection = {"_id": 0, "system_crash_date": 1, "device_name": 1, "crash_label": 1 }
-        filtered_documents = collection.find(query, projection)
-        return filtered_documents
+        if(crash_type == 'Total Crashes'):
+            query = {
+                'system_crash_date': {'$eq': crash_datetime},
+                'Category': {'$eq': crash_type}
+                }
+        else:
+            query = {
+                'system_crash_date': {'$eq': crash_datetime}
+                }
+        #projection = {"_id": 0, "system_crash_date": 1, "device_name": 1, "crash_label": 1 }
+        #filtered_documents = collection.find(query, projection)
+        #return filtered_documents
+
+        # Aggregation pipeline to group by crash_label and count device occurrences
+        pipeline = [
+            {'$match': query},
+            {'$group': {
+                '_id': '$crash_label',  # Group by crash_label
+                'device_count': {'$sum': 1},  # Count device occurrences
+                'devices': {'$push': '$device_name'}  # Collect device names under each crash_label
+            }},
+            {'$project': {
+                '_id': 0,
+                'crash_label': '$_id',  # Rename _id to crash_label
+                'device_count': 1,  # Include the count of devices
+                'devices': 1  # Include the list of devices
+            }}
+        ]        
+        grouped_documents = collection.aggregate(pipeline)
+        return list(grouped_documents)  # Convert the aggregation result to a list

@@ -22,3 +22,5 @@ app.add_url_rule('/bsodcrashdetails', 'bsodcrashdetails', bsod_crash_controller.
 app.add_url_rule('/config', 'Config', config_controller.alert_config, methods=['GET', 'POST'])
 app.add_url_rule('/currentcrashes', 'currentcrashes', forcast_crashes_controller.currentcrashes, methods=['POST'])
 app.add_url_rule('/get-machines', 'get-machines', bsod_crash_controller.get_crash_machines, methods=['GET'])
+app.add_url_rule('/bsod-crash-report', 'bsod-crash-report', bsod_crash_controller.bsodcrashreport, methods=['GET'])
+app.add_url_rule('/get_day_crashes', 'get_day_crashes', bsod_crash_controller.get_day_crashes, methods=['GET'])

@@ -1,0 +1,138 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Page Content -->
+    <div class="container">        
+        <h3 class="mb-4">System Crashes Analysis</h3>
+            <div class="row">
+                <div class="col col-2">
+                    <label for="start_date"  class="form-label">Start Date:</label>
+                    <input type="date" id="start_date" class="form-control" name="start_date" value="{{ default_start_date }}" required>
+                </div>
+                <div class="col col-2">
+                    <label for="end_date" class="form-label">End Date:</label>
+                    <input type="date" id="end_date" class="form-control" name="end_date" value="{{ default_end_date }}" required>
+                </div>
+                <div class="col col-2">
+                    <label for="steps" class="form-label">Forecast Period (Days):</label>
+                    <input type="number" class="form-control" id="steps" name="steps" min="1" value="7" required>
+                </div>
+                <div class="col col-4">
+                    <label for="crash_type" class="form-label">Select Crash Type:</label>
+                    <select name="crash_type" id="crash_type" class="form-control">
+                        <option value="tot_crash" selected="selected">Total Crashes</option>
+                        {% for key, value in category_map.items() %}
+                            <option value="{{ key }}">{{ value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col col-2">
+                    <label for="btnGo" class="form-label" style="color: black;" >.</label><br/>
+                    <button id="btnGo" name="btnGo" type="button" onclick="handleGoClick()" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <br/>
+            <div class="row" >
+                <div class="col col-12">
+                    <div id="detailsContainer" style="width: 90%;border-width: 1px;">
+                        <canvas id="crashForecastChart"></canvas>
+                    </div>
+                </div>    
+            </div>
+    </div>
+        <!-- Bootstrap modal -->
+  <div class="modal modal-dialog-scrollable" tabindex="-1" role="dialog" id="detailsModal">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crash Categoty : <span id="modalCategory"></span></h5>
+        </div>
+        <div class="modal-body">
+            <h5 class="modal-title">Crash Date : <span id="modalDate"></span></h5><br/>
+          <div id="modelContainer"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnclose" onclick="handleCloseClick()" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Script section -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var crashForecastChart = null;
+        function handleGoClick() {
+            // Use XMLHttpRequest or fetch API to get the HTML content from the server
+            const crashType = $('#crash_type').find(":selected").val();
+            const startDate = $('#start_date').val();
+            const endtDate = $('#end_date').val();
+            const steps = $('#steps').val();
+            if (crashForecastChart) {
+                crashForecastChart.destroy();
+            }
+            fetch('/get_day_crashes?crash_type='+crashType+'&start_date='+startDate+'&end_date='+endtDate+'&steps='+steps)  // Example date
+                .then(response => response.json())
+                .then(data => {
+                    // Insert the HTML content into the div with id 'table-container'
+                    //document.getElementById('detailsContainer').innerHTML = data.html_content;
+                    //document.getElementById('detailsContainer').innerHTML = data.
+                    console.log(data);
+                    const ctx = document.getElementById('crashForecastChart').getContext('2d');
+                    crashForecastChart = new Chart(ctx, {
+                        type: 'line',
+                        data: data,
+                        options: {
+                            onClick: (event, elements) => {
+                                if (elements.length > 0) {
+                                    const firstPoint = elements[0];
+                                    const label = crashForecastChart.data.labels[firstPoint.index];
+                                    const value = crashForecastChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                                    // Call a function to handle the click event
+                                    handlePointClick(label, value);
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching the table:', error);
+                });
+        }
+        function handlePointClick(date, value) {
+            // Display the details in a pop-up
+            const crashType = $('#crash_type').find(":selected").text();
+            const url = `/get-machines?crash_date=${encodeURIComponent(date)}&crash_type=${crashType}`;
+            const detailsContainer = document.getElementById('modelContainer');
+            detailsContainer.innerHTML = "";
+            fetch(url)
+                .then(response => {
+                    // Check if the response is OK (status code 200)
+                    if (response.ok) {
+                        // Assuming the response is HTML content
+                        return response.text();
+                    } else {
+                        throw new Error('Network response was not ok.');
+                    }
+                })
+                .then(htmlContent => {
+                    // Render the HTML content in a modal or a div on your page
+                    //const detailsContainer = document.getElementById('detailsContainer');
+                    detailsContainer.innerHTML = htmlContent;
+                    document.getElementById('modalDate').textContent = date;
+                    document.getElementById('modalCategory').textContent = crashType;
+                    // If you're using a modal, show it here
+                    $('#detailsModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+            //alert(value);
+        }
+        function handleCloseClick() {
+            $('#detailsModal').modal('hide');
+        }
+    </script>
+{% endblock %}
