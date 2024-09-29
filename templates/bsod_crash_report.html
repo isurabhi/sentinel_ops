@@ -88,10 +88,16 @@
                             onClick: (event, elements) => {
                                 if (elements.length > 0) {
                                     const firstPoint = elements[0];
-                                    const label = crashForecastChart.data.labels[firstPoint.index];
+                                    const date = crashForecastChart.data.labels[firstPoint.index];
                                     const value = crashForecastChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+                                    const label = crashForecastChart.data.datasets[firstPoint.datasetIndex].label;
                                     // Call a function to handle the click event
-                                    handlePointClick(label, value);
+                                    if(!label.includes('Forecast'))
+                                    {
+                                        $('crashForecastChart').css("cursor", "progress");
+                                        handlePointClick(date, value);
+                                    }
+                                        
                                 }
                             }
                         }
@@ -124,6 +130,7 @@
                     document.getElementById('modalDate').textContent = date;
                     document.getElementById('modalCategory').textContent = crashType;
                     // If you're using a modal, show it here
+                    $('crashForecastChart').css("cursor", "default");
                     $('#detailsModal').modal('show');
                 })
                 .catch(error => {

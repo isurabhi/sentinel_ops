@@ -111,7 +111,7 @@ def get_crash_machines():
 
     html_content = '<div class="row">'
     for index, row in data.iterrows():
-        html_content += '<div class="col-sm-4"><div class="card mb-3" style="height: 18rem;">'
+        html_content += '<div class="col-sm-4"><div class="card mb-3" style="height: 12rem;">'
         html_content += f'<h5 class="card-header">Device Count : {row["device_count"]}</h5>'
         html_content += '<div class="card-body">'
         html_content += f'<h5 class="card-title">Crash Label : {row["crash_label"]}</h5>'

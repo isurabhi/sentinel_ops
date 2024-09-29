@@ -106,7 +106,7 @@ class DataService:
     def get_bsod_crash_machines(self, crash_date, crash_type):
         collection = self.connector.get_collection('BSOD')
         crash_datetime = datetime.strptime(crash_date, '%Y-%m-%d')
-        if(crash_type == 'Total Crashes'):
+        if(crash_type != 'Total Crashes'):
             query = {
                 'system_crash_date': {'$eq': crash_datetime},
                 'Category': {'$eq': crash_type}
